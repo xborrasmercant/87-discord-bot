@@ -3,7 +3,7 @@ import discord
 from discord import *
 from typing import *
 from dotenv import *
-from botclient import *
+from botClient import *
 
 
 # 1. TOKEN LOAD
