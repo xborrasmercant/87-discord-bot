@@ -1,8 +1,8 @@
 import discord
 from discord import *
-from discord.ui import *
+from discord.ext import commands
+from discord.commands import Option
 from datetime import *
-from modal import Feedback
 
 TEST_GUILD = discord.Object(id=788658822633619487)
 
@@ -11,7 +11,6 @@ class BotClient(discord.Client):
 
     def __init__(self, intents) -> None:
         super().__init__(intents = intents)
-        self.tree = app_commands.CommandTree(self) # Create slash commands tree
         
 
     async def on_ready(self) -> None: # On execution
@@ -21,10 +20,6 @@ class BotClient(discord.Client):
         print("-----------------------------------------")
         
 
-    async def setup_hook(self) -> None:
-        # Sync commands with Discord
-        await self.tree.sync(guild=TEST_GUILD)
-        self.tree.command(guild=TEST_GUILD, description="Submit feedback")(self.feedback)
-
-    async def feedback(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(Feedback())
+    @bot.slash_command(name="medalla", description="Selecciona la medalla que deseas pedir")
+    async def ping(ctx):
+        await ctx.respond("Hola que ase")
