@@ -2,13 +2,14 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from random import randint
+from medalla import DropdownView
 import discord
 from discord.ext import commands
 
+
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-
-TEST_GUILD = discord.Object(id=788658822633619487)
+GUILD_ID = 788658822633619487
 
 class BotClient(commands.Bot):
     def __init__(self) -> None:
@@ -21,16 +22,20 @@ class BotClient(commands.Bot):
         print(f"Logged on as {self.user} at {systemtime}")
         print("-----------------------------------------")
 
-client = BotClient()
+bot = BotClient()
 
-# MEDALLA
-@client.slash_command(name="medalla", description="Selecciona la medalla que deseas pedir", guild_ids=[788658822633619487])
-async def medalla(ctx):
-    await ctx.respond("Hola que ase")
+# CONDECORACIONES
+@bot.slash_command(name="condecoración", description="Selecciona la condecoración que deseas pedir", guild_ids=[GUILD_ID])
+async def requestAward(ctx):
+    guild = bot.get_guild(GUILD_ID)
+    roles = [role for role in guild.roles if roleIsAward(role)]
+    view = DropdownView(roles)
+    await ctx.respond("Select a role:", view=view, ephemeral=True)
+
 
 # DADO
-@client.slash_command(name="dado", description="Lanza un dado de x caras", guild_ids=[788658822633619487])
-async def dado(ctx, cantidad: discord.Option(int, "Cuantos dados quieres tirar."), caras: discord.Option(int, "Número de caras del dado.")):
+@bot.slash_command(name="dado", description="Lanza un dado de x caras", guild_ids=[GUILD_ID])
+async def throwDice(ctx, cantidad: discord.Option(int, "Cuantos dados quieres tirar."), caras: discord.Option(int, "Número de caras del dado.")): # type: ignore
     if cantidad <= 100:
         if cantidad > 1:
             dice_results = []
@@ -45,5 +50,10 @@ async def dado(ctx, cantidad: discord.Option(int, "Cuantos dados quieres tirar."
     else:
         await ctx.respond("*Por favor, introduce un número menor que 100.*")
     
+def roleIsAward(role):
+    if role.name.startswith("💠") or role.name.startswith("🔰") or role.name.startswith("🟡"):
+        return True
+    else :
+        return False    
 
-client.run(TOKEN)
+bot.run(TOKEN)
