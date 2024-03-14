@@ -36,11 +36,34 @@ class BotClient(commands.Bot):
             await mention_user_control(self, message)
         elif message.role_mentions:
             await mention_role_control(self, message)
-        else:
-            await message.reply(f"Received {message.content}", mention_author=True)
 
 
 bot = BotClient()
+
+
+# POINT AMOUNT
+@bot.slash_command(name="puntos", description="Proporciona la cantidad puntos condecorativos que posees.",
+                   guild_ids=[GUILD_ID])
+async def get_points(ctx):
+    point_amount = 0
+
+    awards = [role for role in ctx.author.roles if role_is_award(role)]
+
+    for award in awards:
+        if award.name.startswith("🎇"):
+            point_amount += 100
+        elif award.name.startswith("🥇"):
+            point_amount += 50
+        elif award.name.startswith("🥈"):
+            point_amount += 25
+        elif award.name.startswith("🥉"):
+            point_amount += 10
+        elif award.name.startswith("⚓"):
+            point_amount += 15
+        elif award.name.startswith("🔰"):
+            point_amount += 5
+
+    await ctx.send(f"Posees {point_amount} puntos condecorativos.")
 
 
 # TIMESTAMP
@@ -48,7 +71,7 @@ bot = BotClient()
 async def timestamp(ctx,
                     hora: discord.Option(str, "Tu hora local en formato HH:MM"),
                     zona_horaria: discord.Option(str, "Tu zona horaria, por ejemplo Europe/Madrid")):
-    """Converts a time in HH:MM format to a Discord timestamp for the current date."""
+    # TODO: CONTINUE METHOD
     try:
         today = datetime.today()
         datetime_str = f"{today.strftime('%Y-%m-%d')} {hora}"
@@ -67,7 +90,8 @@ async def timestamp(ctx,
 
 
 # CONDECORACIONES
-@bot.slash_command(name="condecoración", description="Selecciona la condecoración que deseas pedir", guild_ids=[GUILD_ID])
+@bot.slash_command(name="condecoración", description="Selecciona la condecoración que deseas pedir",
+                   guild_ids=[GUILD_ID])
 async def request_award(ctx):
     guild = bot.get_guild(GUILD_ID)
     roles = [role for role in guild.roles if role_is_award(role)]
@@ -96,7 +120,12 @@ async def throw_dice(ctx,
 
 
 def role_is_award(role):
-    if role.name.startswith("💠") or role.name.startswith("🔰") or role.name.startswith("🟡"):
+    if (role.name.startswith("🎇")
+            or role.name.startswith("🥇")
+            or role.name.startswith("🥈")
+            or role.name.startswith("🥉")
+            or role.name.startswith("⚓")
+            or role.name.startswith("🔰")):
         return True
     else:
         return False
