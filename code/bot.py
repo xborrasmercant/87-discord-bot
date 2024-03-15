@@ -85,7 +85,7 @@ async def get_awards(ctx):
 # FRANCO FRIDAY
 @bot.slash_command(name="franco", description="franco friday", guild_ids=[GUILD_ID])
 async def franco_friday(ctx):
-    franco_friday_file = File("resources/vid/franco_friday.mp4")
+    franco_friday_file = File("../resources/vid/franco_friday.mp4")
 
     await ctx.send("## ¡Atención, el Franco Friday ha comenzado! \n"
                    f"¡Muestra tus respetos como es debido! Responde a este mensaje con <:chispy:1218281005971013692>",
