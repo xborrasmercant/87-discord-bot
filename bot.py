@@ -1,4 +1,6 @@
 import os
+
+from discord import File
 from dotenv import load_dotenv
 from datetime import datetime
 from random import randint
@@ -41,7 +43,7 @@ class BotClient(commands.Bot):
 bot = BotClient()
 
 
-# POINT AMOUNT
+# SHOW AWARDS
 @bot.slash_command(name="stats",
                    description="Muestra tus condecoraciones ademas de la cantidad puntos condecorativos.",
                    guild_ids=[GUILD_ID])
@@ -69,7 +71,8 @@ async def get_awards(ctx):
         embed.add_field(name=" ", value="", inline=False)
 
     embed.add_field(name=" ", value="", inline=False)
-    embed.add_field(name="", value=f"La cantidad de puntos condecorativos totales es de **{point_amount}**", inline=False)
+    embed.add_field(name="", value=f"La cantidad de puntos condecorativos totales es de **{point_amount}**",
+                    inline=False)
 
     embed.set_author(name="Departamento de Condecoraciones",
                      icon_url="https://yt3.googleusercontent.com/ytc/AIdro_nnYadq0WqvS4Q5EMvjdbRvE5RqT-oRAUPV6GcS=s900-c-k-c0x00ffffff-no-rj")
@@ -77,6 +80,16 @@ async def get_awards(ctx):
     embed.set_image(url="https://i.ytimg.com/vi/Kf1Y6pZPFyA/maxresdefault.jpg")
 
     await ctx.respond(embed=embed)
+
+
+# FRANCO FRIDAY
+@bot.slash_command(name="franco", description="franco friday", guild_ids=[GUILD_ID])
+async def franco_friday(ctx):
+    franco_friday_file = File("resources/vid/franco_friday.mp4")
+
+    await ctx.send("## ¡Atención, el Franco Friday ha comenzado! \n"
+                   f"¡Muestra tus respetos como es debido! Responde a este mensaje con <:chispy:1218281005971013692>",
+                   file=franco_friday_file)
 
 
 # TIMESTAMP
@@ -142,6 +155,8 @@ async def role_is_award(role):
         return True
     else:
         return False
+
+
 async def mention_user_control(self, message):
     if self.last_mention == message.mentions:
         self.mention_counter = self.mention_counter + 1
@@ -152,6 +167,8 @@ async def mention_user_control(self, message):
     if self.mention_counter > 4:
         await message.reply("Relaja las tetas", mention_author=True)
         # TODO: grant timeout method to message author
+
+
 async def mention_role_control(self, message):
     if self.last_mention == message.role_mentions:
         self.mention_counter = self.mention_counter + 1
@@ -163,6 +180,8 @@ async def mention_role_control(self, message):
         self.mention_counter = 0
         await message.reply("Relaja las tetas", mention_author=True)
         # TODO: grant timeout method to message author
+
+
 async def get_award_points(award):
     if award.name.startswith("🎇"):
         return 100
@@ -176,6 +195,8 @@ async def get_award_points(award):
         return 15
     elif award.name.startswith("🔰"):
         return 5
+
+
 async def get_award_dict(awards):
     awards_dict = {}
     for award in awards:
@@ -210,20 +231,23 @@ async def get_award_dict(awards):
             else:
                 awards_dict["Reconocimientos"] = [award]
     return awards_dict
-async def sum_award_points(award, point_amount):
-        if award.name.startswith("🎇"):
-            point_amount += 100
-        elif award.name.startswith("🥇"):
-            point_amount += 50
-        elif award.name.startswith("🥈"):
-            point_amount += 25
-        elif award.name.startswith("🥉"):
-            point_amount += 10
-        elif award.name.startswith("⚓"):
-            point_amount += 15
-        elif award.name.startswith("🔰"):
-            point_amount += 5
 
-        return point_amount
+
+async def sum_award_points(award, point_amount):
+    if award.name.startswith("🎇"):
+        point_amount += 100
+    elif award.name.startswith("🥇"):
+        point_amount += 50
+    elif award.name.startswith("🥈"):
+        point_amount += 25
+    elif award.name.startswith("🥉"):
+        point_amount += 10
+    elif award.name.startswith("⚓"):
+        point_amount += 15
+    elif award.name.startswith("🔰"):
+        point_amount += 5
+
+    return point_amount
+
 
 bot.run(TOKEN)
