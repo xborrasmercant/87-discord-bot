@@ -4,7 +4,7 @@ from discord import File
 from dotenv import load_dotenv
 from datetime import datetime
 from random import randint
-from medalla import DropdownView
+from views import AwardsDropdown, RanksDropdown
 import discord
 from discord.ext import commands
 import pytz
@@ -91,6 +91,12 @@ async def franco_friday(ctx):
                    f"¡Muestra tus respetos como es debido! Responde a este mensaje con <:chispy:1218281005971013692>",
                    file=franco_friday_file)
 
+# MEMBER COUNT
+@bot.slash_command(name="cantidad_miembros", description="Muestra la cantidad de miembros del rango seleccionado", guild_ids=[GUILD_ID])
+async def get_member_qty(ctx):
+    guild = bot.get_guild(GUILD_ID)
+    view = RanksDropdown(ctx.guild)
+    await ctx.respond("Select a role:", view=view, ephemeral=True)
 
 # TIMESTAMP
 @bot.slash_command(name="timestamp", description="Introduce una hora (HH:MM)", guild_ids=[GUILD_ID])
@@ -121,7 +127,7 @@ async def timestamp(ctx,
 async def request_award(ctx):
     guild = bot.get_guild(GUILD_ID)
     roles = [role for role in guild.roles if await role_is_award(role)]
-    view = DropdownView(roles)
+    view = AwardsDropdown(roles)
     await ctx.respond("Select a role:", view=view, ephemeral=True)
 
 
@@ -155,6 +161,14 @@ async def role_is_award(role):
         return True
     else:
         return False
+
+async def role_is_rank(role):
+    roles_to_check = ["Enlistado", "Recluta", "Soldado Regular", "Soldado Veterano",
+                      "Tropa de Élite", "Cuerpo de Granaderos", "Guardia Valona",
+                      "Guardia Real", "Cabo", "Sargento", "Alférez", "Teniente",
+                      "Capitán", "Coronel", "General", "Mariscal"]
+
+    return role.name in roles_to_check
 
 
 async def mention_user_control(self, message):
